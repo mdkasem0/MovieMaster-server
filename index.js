@@ -59,8 +59,19 @@ async function run() {
       res.send(user);
     });
 
+// ✅ Get All Users (Admin)
+    app.get("/users", async (req, res) => {
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    });
 
-    
+    // ✅ Delete User 
+    app.delete("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.deleteOne({ email });
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
