@@ -79,6 +79,40 @@ async function run() {
       res.send(result);
     });
 
+     // Get All Movies with Filters
+        app.get("/movies", async (req, res) => {
+          const { genre, minRating, maxRating } = req.query;
+          const filter = {};
+    
+          if (genre) filter.genre = { $in: genre.split(",") };
+          if (minRating || maxRating)
+            filter.rating = {
+              ...(minRating ? { $gte: parseFloat(minRating) } : {}),
+              ...(maxRating ? { $lte: parseFloat(maxRating) } : {}),
+            };
+    
+          const result = await moviesCollection.find(filter).toArray();
+          res.send(result);
+        });
+    
+        // Get Single Movie
+        app.get("/movies/:id", async (req, res) => {
+          const id = req.params.id;
+          const movie = await moviesCollection.findOne({ _id: new ObjectId(id) });
+          res.send(movie);
+        });
+    
+        // Update Movie
+        app.put("/movies/:id", async (req, res) => {
+          const id = req.params.id;
+          const updatedMovie = req.body;
+          const result = await moviesCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updatedMovie }
+          );
+          res.send(result);
+        });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
