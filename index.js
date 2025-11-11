@@ -130,7 +130,30 @@ async function run() {
                 .toArray();
             res.send(result);
         });
+        // Add to Watchlist
+        app.post("/watchlist", async (req, res) => {
+            const item = req.body;
+            const result = await watchlistCollection.insertOne(item);
+            res.send(result);
+        });
 
+        // Get User's Watchlist
+        app.get("/watchlist/:email", async (req, res) => {
+            const email = req.params.email;
+            const result = await watchlistCollection
+                .find({ userEmail: email })
+                .toArray();
+            res.send(result);
+        });
+
+        // Remove from Watchlist
+        app.delete("/watchlist/:id", async (req, res) => {
+            const id = req.params.id;
+            const result = await watchlistCollection.deleteOne({
+                _id: new ObjectId(id),
+            });
+            res.send(result);
+        });
 
 
         // Send a ping to confirm a successful connection
